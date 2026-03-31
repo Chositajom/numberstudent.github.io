@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard - วิเคราะห์การเปลี่ยนแปลงนักเรียน (2564-2568)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; }
+        .chart-container { position: relative; height: 320px; width: 100%; }
+        .tab-active { border-bottom: 4px solid #ef4444; color: #ef4444; }
+        .tab-active-inc { border-bottom: 4px solid #10b981; color: #10b981; }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-slate-800">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <header class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900">Dashboard วิเคราะห์อัตราการเติบโต</h1>
+                <p class="text-slate-500 text-lg">เปรียบเทียบสถิตินักเรียน 5 ปี (ปี 2564 เทียบกับ ปี 2568)</p>
+            </div>
+            <div class="bg-white px-5 py-3 rounded-2xl shadow-sm border border-slate-200 text-right">
+                <span class="text-xs font-bold text-slate-400 block uppercase tracking-wider">Net Change (Total)</span>
+                <span class="text-red-500 font-black text-2xl">-5.91%</span>
+            </div>
+        </header>
+
+        <!-- Executive Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-8 border-l-blue-500">
+                <p class="text-sm font-bold text-slate-400 mb-1">นักเรียนรวม (2568)</p>
+                <h3 class="text-4xl font-black text-slate-800">56,080</h3>
+                <p class="text-xs text-slate-400 mt-2 italic">ลดลง 3,523 คน จากฐานปี 2564</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-8 border-l-emerald-500">
+                <p class="text-sm font-bold text-slate-400 mb-1">Growth Leader</p>
+                <h3 class="text-3xl font-black text-emerald-600">ภัทรวิทยา</h3>
+                <p class="text-xs text-emerald-500 mt-2 font-bold">+30.51% (เพิ่มขึ้น 537 คน)</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-8 border-l-rose-500">
+                <p class="text-sm font-bold text-slate-400 mb-1">Critical Watch</p>
+                <h3 class="text-3xl font-black text-rose-600">โรชารีโอวิทยา</h3>
+                <p class="text-xs text-rose-400 mt-2 font-bold">-30.62% (ลดลง 320 คน)</p>
+            </div>
+        </div>
+
+        <!-- Trend and Distribution Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <h4 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    แนวโน้มรวม 5 ปี (2564 - 2568)
+                </h4>
+                <div class="chart-container">
+                    <canvas id="mainTrendChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <h4 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    10 โรงเรียนที่มีขนาดใหญ่ที่สุด (ปี 2568)
+                </h4>
+                <div class="chart-container">
+                    <canvas id="distributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focused Analysis Tables (The requested change) -->
+        <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 border-b border-slate-200 px-8 pt-6 flex flex-wrap gap-x-12">
+                <button id="tabDecr" onclick="switchTable('decrease')" class="pb-4 text-sm font-black transition-all uppercase tracking-widest tab-active">
+                    10 อันดับที่ลดลงมากที่สุด (%)
+                </button>
+                <button id="tabIncr" onclick="switchTable('increase')" class="pb-4 text-sm font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest">
+                    10 อันดับที่เพิ่มขึ้นมากที่สุด (%)
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-white text-slate-400 text-[10px] uppercase tracking-[0.2em]">
+                        <tr>
+                            <th class="px-8 py-5 font-bold">อันดับ / ชื่อโรงเรียน</th>
+                            <th class="px-8 py-5 font-bold text-center">ปี 2564</th>
+                            <th class="px-8 py-5 font-bold text-center text-blue-600">ปี 2568</th>
+                            <th class="px-8 py-5 font-bold text-center">ส่วนต่าง (คน)</th>
+                            <th class="px-8 py-5 font-bold text-right">เปลี่ยนแปลง (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analysisTableBody" class="divide-y divide-slate-100 text-slate-700 font-medium">
+                        <!-- Top 10 data injected here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="bg-slate-50 p-4 text-center">
+                <p class="text-xs text-slate-400 font-medium">* ข้อมูลเปรียบเทียบเฉพาะปีการศึกษา 2564 และ 2568 เพื่อดูอัตราการเติบโตรวม</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rawData = [
+            { "name": "เซนต์โยเซฟคอนเวนต์", "y68": 4989, "y64": 5215 },
+            { "name": "อัสสัมชัญคอนแวนต์", "y68": 1296, "y64": 1463 },
+            { "name": "อัสสัมชัญคอนแวนต์ สีลม", "y68": 1057, "y64": 1227 },
+            { "name": "ซางตาครู้สคอนแวนท์", "y68": 1083, "y64": 1329 },
+            { "name": "เซนต์ฟรังซิสซาเวียร์ฯ", "y68": 2088, "y64": 2149 },
+            { "name": "เซนต์ฟรังฯ เมืองทอง", "y68": 3754, "y64": 3674 },
+            { "name": "เซนต์โยเซฟ บางนา", "y68": 2581, "y64": 2921 },
+            { "name": "เซนต์โยเซฟ ทิพวัล", "y68": 2033, "y64": 2484 },
+            { "name": "เซนต์ปอลคอนแวนต์", "y68": 1372, "y64": 1549 },
+            { "name": "เซนต์โยเซฟ ระยอง", "y68": 845, "y64": 1002 },
+            { "name": "อัสสัมชัญคอนแวนต์ ลำนารายณ์", "y68": 1523, "y64": 1389 },
+            { "name": "อัสสัมชัญคอนแวนต์ ลพบุรี", "y68": 1336, "y64": 1200 },
+            { "name": "เซนต์โยเซฟ ศรีเพชรบูรณ์", "y68": 1131, "y64": 1409 },
+            { "name": "เซนต์โยเซฟ นครสวรรค์", "y68": 2843, "y64": 3057 },
+            { "name": "เซนต์โยเซฟ แม่ระมาด", "y68": 1088, "y64": 1030 },
+            { "name": "เซนต์ปอลคอนแวนต์ พบพระ", "y68": 447, "y64": 347 },
+            { "name": "อนุบาลเซนต์ปอล พบพระ", "y68": 223, "y64": 142 },
+            { "name": "เจ้าฟ้าอุบลรัตน์", "y68": 273, "y64": 351 },
+            { "name": "เซนต์โยเซฟ แม่แจ่ม", "y68": 361, "y64": 264 },
+            { "name": "เซนต์ปอล หนองคาย", "y68": 877, "y64": 951 },
+            { "name": "โรชารีโอวิทยา", "y68": 725, "y64": 1045 },
+            { "name": "เซนต์โยเซฟ ท่าแร่", "y68": 788, "y64": 897 },
+            { "name": "เซนต์โยเซฟ เพชรบุรี", "y68": 456, "y64": 644 },
+            { "name": "เซนต์โยเซฟ เกาะสมุย", "y68": 1258, "y64": 1217 },
+            { "name": "ซางตาครู้สศึกษา", "y68": 844, "y64": 1086 },
+            { "name": "เซนต์หลุยส์ศึกษา", "y68": 510, "y64": 605 },
+            { "name": "พระมารดานิจจานุเคราะห์", "y68": 3316, "y64": 3968 },
+            { "name": "แม่พระสกลสงเคราะห์", "y68": 3531, "y64": 3722 },
+            { "name": "เซนต์แอนโทนี", "y68": 998, "y64": 1076 },
+            { "name": "มารดานฤมล", "y68": 2810, "y64": 2463 },
+            { "name": "มารีย์วิทยา", "y68": 5650, "y64": 6032 },
+            { "name": "อนุบาลนิจจา'หนองคาย", "y68": 211, "y64": 288 },
+            { "name": "ภัทรวิทยา", "y68": 2297, "y64": 1760 },
+            { "name": "ศีลรวี", "y68": 680, "y64": 682 },
+            { "name": "สันติวิทยา", "y68": 806, "y64": 965 }
+        ];
+
+        // Processed data
+        const processed = rawData.map(s => {
+            const diff = s.y68 - s.y64;
+            const pct = (diff / s.y64) * 100;
+            return { ...s, diff, pct };
+        });
+
+        const top10Increase = [...processed].sort((a, b) => b.pct - a.pct).slice(0, 10);
+        const top10Decrease = [...processed].sort((a, b) => a.pct - b.pct).slice(0, 10);
+
+        function switchTable(mode) {
+            const body = document.getElementById('analysisTableBody');
+            const tabIncr = document.getElementById('tabIncr');
+            const tabDecr = document.getElementById('tabDecr');
+            const data = mode === 'increase' ? top10Increase : top10Decrease;
+
+            // UI Tab Styling
+            if(mode === 'increase') {
+                tabIncr.className = "pb-4 text-sm font-black transition-all uppercase tracking-widest tab-active-inc";
+                tabDecr.className = "pb-4 text-sm font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest";
+            } else {
+                tabDecr.className = "pb-4 text-sm font-black transition-all uppercase tracking-widest tab-active";
+                tabIncr.className = "pb-4 text-sm font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest";
+            }
+
+            body.innerHTML = '';
+            data.forEach((s, index) => {
+                const isPos = s.pct > 0;
+                const row = `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-8 py-5">
+                            <span class="text-xs text-slate-300 font-bold mr-4">#${index + 1}</span>
+                            <span class="font-bold text-slate-800">${s.name}</span>
+                        </td>
+                        <td class="px-8 py-5 text-center text-slate-500">${s.y64.toLocaleString()}</td>
+                        <td class="px-8 py-5 text-center font-bold text-slate-800">${s.y68.toLocaleString()}</td>
+                        <td class="px-8 py-5 text-center font-bold ${isPos ? 'text-emerald-600' : 'text-rose-500'}">
+                            ${s.diff > 0 ? '+' : ''}${s.diff.toLocaleString()}
+                        </td>
+                        <td class="px-8 py-5 text-right">
+                            <span class="inline-flex items-center px-4 py-1.5 rounded-xl text-sm font-black ${isPos ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">
+                                ${isPos ? '↑' : '↓'} ${Math.abs(s.pct).toFixed(2)}%
+                            </span>
+                        </td>
+                    </tr>
+                `;
+                body.innerHTML += row;
+            });
+        }
+
+        function renderCharts() {
+            const totals = { "2564": 59603, "2565": 57456, "2566": 56976, "2567": 56573, "2568": 56080 };
+            
+            // Trend Line
+            new Chart(document.getElementById('mainTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2564', '2565', '2566', '2567', '2568'],
+                    datasets: [{
+                        label: 'นักเรียนรวม',
+                        data: Object.values(totals),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                        fill: true, tension: 0.5, borderWidth: 4,
+                        pointBackgroundColor: '#fff', pointBorderColor: '#3b82f6', pointBorderWidth: 2, pointRadius: 5
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { grid: { borderDash: [5, 5] } }, x: { grid: { display: false } } }
+                }
+            });
+
+            // Top 10 by Size
+            const topBySize = [...rawData].sort((a,b) => b.y68 - a.y68).slice(0, 10);
+            new Chart(document.getElementById('distributionChart'), {
+                type: 'bar',
+                data: {
+                    labels: topBySize.map(s => s.name),
+                    datasets: [{
+                        label: 'จำนวนคน',
+                        data: topBySize.map(s => s.y68),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 8
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        window.onload = () => {
+            renderCharts();
+            switchTable('decrease'); // Start with Decrease as requested previously
+        };
+    </script>
+</body>
+</html>
